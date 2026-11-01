@@ -4,8 +4,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { getCard } from '../data/cards';
 import type { OpeningRecord } from '../persistence/repository';
-import { cardBackTexture, cardFaceTexture } from '../render/textureStore';
+import { cardBackTexture, cardFaceTextures } from '../render/textureStore';
 import { CardMesh, makeCardFx, type CardFx } from './CardMesh';
+import type { CardFaceTextures } from './cardMaterial';
 import { applyPose, pileCardPose, readPose, revealLayout, stackCardPose, type Pose } from './layout';
 import { sceneFx } from './sceneFx';
 
@@ -30,13 +31,14 @@ export function RevealCards({ opening, phase, revealIndex, reducedMotion, onCard
   layoutRef.current = layout;
 
   const [back, setBack] = useState<THREE.Texture | null>(null);
-  const [faces, setFaces] = useState<Record<string, THREE.Texture>>({});
+  const [faces, setFaces] = useState<Record<string, CardFaceTextures>>({});
   useEffect(() => {
     let alive = true;
     cardBackTexture().then((t) => alive && setBack(t));
-    Promise.all(opening.cards.map((c) => cardFaceTexture(c.cardId).then((t) => [c.cardId, t] as const))).then(
-      (entries) => alive && setFaces(Object.fromEntries(entries)),
-    );
+    // Faces arrive one by one; each card only waits for its own face.
+    for (const id of new Set(opening.cards.map((c) => c.cardId))) {
+      cardFaceTextures(id).then((t) => alive && setFaces((f) => ({ ...f, [id]: t })));
+    }
     return () => {
       alive = false;
     };
@@ -60,7 +62,7 @@ export function RevealCards({ opening, phase, revealIndex, reducedMotion, onCard
   const pointer = useThree((s) => s.pointer);
   const cbs = useRef({ onCardShown, onSound });
   cbs.current = { onCardShown, onSound };
-  const ready = !!back && Object.keys(faces).length > 0;
+  const ready = !!back && !!faces[opening.cards[Math.min(revealIndex, opening.cards.length - 1)].cardId];
 
   // Run the transition whenever the face-up card changes.
   useEffect(() => {

@@ -32,12 +32,12 @@ export function revealLayout(viewport: { width: number; height: number }) {
 /** Pose of the k-th card (0 = first revealed) inside a stack whose base is `base`. */
 export function stackCardPose(base: Pose, k: number, total = 10): Pose {
   // The first card to be revealed sits on top (closest to the camera).
-  const depth = (total - 1 - k) * CARD_THICKNESS * 1.25 * base.s;
+  const depth = (total - 1 - k) * CARD_THICKNESS * 1.08 * base.s;
   return { ...base, z: base.z + depth, rz: base.rz + (((k * 37) % 7) - 3) * 0.003 };
 }
 
 export function pileCardPose(base: Pose, k: number): Pose {
-  return { ...base, z: base.z + k * CARD_THICKNESS * 1.25 * base.s, rz: (((k * 53) % 11) - 5) * 0.012 };
+  return { ...base, z: base.z + k * CARD_THICKNESS * 1.08 * base.s, rz: (((k * 53) % 11) - 5) * 0.012 };
 }
 
 export function applyPose(obj: THREE.Object3D, p: Pose) {

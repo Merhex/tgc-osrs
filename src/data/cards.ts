@@ -46,6 +46,27 @@ export interface FrameStyle {
   motif: 'stone' | 'iron' | 'sandstone' | 'volcanic' | 'obsidian' | 'silver' | 'goldFoil' | 'paleFoil';
 }
 
+/** Foil pattern printed behind the artwork (card finish design only). */
+export type FinishPattern =
+  | 'crystalFacets'
+  | 'web'
+  | 'sandstoneGeometry'
+  | 'volcanic'
+  | 'interference'
+  | 'organicGrain'
+  | 'darkMetal'
+  | 'solarRadial'
+  | 'prismatic';
+
+export interface CardFinish {
+  pattern: FinishPattern;
+  /** Two reflection colours the foil shifts between with viewing angle. */
+  holoA: string;
+  holoB: string;
+  /** How much full-spectrum iridescence mixes in (0 = only holoA/holoB). */
+  spectral: number;
+}
+
 export interface CardDefinition {
   id: string;
   number: string;
@@ -59,6 +80,7 @@ export interface CardDefinition {
   art: string;
   frame: FrameStyle;
   effect: InspectEffect;
+  finish: CardFinish;
 }
 
 export const SET_NAME = 'Legends of Gielinor — Volume I';
@@ -77,6 +99,7 @@ export const CARDS: readonly CardDefinition[] = [
     art: 'great-olm.svg',
     frame: { base: '#6f6a5f', shade: '#3b3832', accent: '#5fe08a', accent2: '#2f8f5a', motif: 'stone' },
     effect: 'chamberGlow',
+    finish: { pattern: 'crystalFacets', holoA: '#5fe08a', holoB: '#9a5cff', spectral: 0.35 },
   },
   {
     id: 'verzik-vitur',
@@ -90,6 +113,7 @@ export const CARDS: readonly CardDefinition[] = [
     art: 'verzik-vitur.svg',
     frame: { base: '#3c3f45', shade: '#1b1c20', accent: '#d12b3a', accent2: '#7a1420', motif: 'iron' },
     effect: 'crimsonPulse',
+    finish: { pattern: 'web', holoA: '#d12b3a', holoB: '#5c0d16', spectral: 0.15 },
   },
   {
     id: 'the-wardens',
@@ -103,6 +127,7 @@ export const CARDS: readonly CardDefinition[] = [
     art: 'the-wardens.svg',
     frame: { base: '#c9a46a', shade: '#7d5f33', accent: '#3fd6c8', accent2: '#e8c35a', motif: 'sandstone' },
     effect: 'alternatingLight',
+    finish: { pattern: 'sandstoneGeometry', holoA: '#f0c55c', holoB: '#3fd6c8', spectral: 0.3 },
   },
   {
     id: 'tzkal-zuk',
@@ -116,6 +141,7 @@ export const CARDS: readonly CardDefinition[] = [
     art: 'tzkal-zuk.svg',
     frame: { base: '#24201f', shade: '#0d0b0b', accent: '#ff7a1a', accent2: '#c73c0c', motif: 'volcanic' },
     effect: 'lavaEmbers',
+    finish: { pattern: 'volcanic', holoA: '#ff7a1a', holoB: '#ffcf4a', spectral: 0.2 },
   },
   {
     id: 'infernal-cape',
@@ -129,6 +155,7 @@ export const CARDS: readonly CardDefinition[] = [
     art: 'infernal-cape.svg',
     frame: { base: '#1d1a20', shade: '#09080a', accent: '#ff8a2a', accent2: '#ffb347', motif: 'obsidian' },
     effect: 'lavaPattern',
+    finish: { pattern: 'volcanic', holoA: '#ff8a2a', holoB: '#c73c0c', spectral: 0.2 },
   },
   {
     id: 'elysian-spirit-shield',
@@ -142,6 +169,7 @@ export const CARDS: readonly CardDefinition[] = [
     art: 'elysian-spirit-shield.svg',
     frame: { base: '#b9c2cc', shade: '#5f6873', accent: '#6fc8ff', accent2: '#c9ecff', motif: 'silver' },
     effect: 'spectralRipple',
+    finish: { pattern: 'interference', holoA: '#6fc8ff', holoB: '#c9ecff', spectral: 0.55 },
   },
   {
     id: 'twisted-bow',
@@ -155,6 +183,7 @@ export const CARDS: readonly CardDefinition[] = [
     art: 'twisted-bow.svg',
     frame: { base: '#d8b04a', shade: '#7c5a1c', accent: '#4fe07a', accent2: '#9a5cff', motif: 'goldFoil' },
     effect: 'holoSheen',
+    finish: { pattern: 'organicGrain', holoA: '#4fe07a', holoB: '#e8c35a', spectral: 0.35 },
   },
   {
     id: 'scythe-of-vitur',
@@ -168,6 +197,7 @@ export const CARDS: readonly CardDefinition[] = [
     art: 'scythe-of-vitur.svg',
     frame: { base: '#d1a643', shade: '#3a3436', accent: '#e0263a', accent2: '#5c0d16', motif: 'goldFoil' },
     effect: 'crimsonSweep',
+    finish: { pattern: 'darkMetal', holoA: '#e0263a', holoB: '#9aa0ab', spectral: 0.15 },
   },
   {
     id: 'tumekens-shadow',
@@ -181,6 +211,7 @@ export const CARDS: readonly CardDefinition[] = [
     art: 'tumekens-shadow.svg',
     frame: { base: '#d6aa45', shade: '#3a2350', accent: '#ffb547', accent2: '#6a2fb0', motif: 'goldFoil' },
     effect: 'amberAura',
+    finish: { pattern: 'solarRadial', holoA: '#ffb547', holoB: '#7a3fd0', spectral: 0.35 },
   },
   {
     id: 'third-age-pickaxe',
@@ -194,6 +225,7 @@ export const CARDS: readonly CardDefinition[] = [
     art: 'third-age-pickaxe.svg',
     frame: { base: '#dfe3e8', shade: '#8a8f96', accent: '#e9c66a', accent2: '#f4f6ff', motif: 'paleFoil' },
     effect: 'silverGoldShimmer',
+    finish: { pattern: 'prismatic', holoA: '#e9c66a', holoB: '#e8ecf4', spectral: 0.4 },
   },
 ];
 

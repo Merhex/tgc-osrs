@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import type { Phase } from '../opening/machine';
 import type { OpeningRecord } from '../persistence/repository';
-import { packTextures, releaseCardTextures, type PackTextures } from '../render/textureStore';
+import { packTextures, prewarmCardTextures, releaseCardTextures, type PackTextures } from '../render/textureStore';
 import { maxDpr, usePageVisible } from '../hooks/usePageVisible';
 import { Pack, type PackRotation } from './Pack';
 import { RevealCards, type RevealSound } from './RevealCards';
@@ -42,7 +42,10 @@ export default function Stage(props: StageProps) {
 
   useEffect(() => {
     let alive = true;
-    packTextures().then((t) => alive && setTextures(t));
+    packTextures().then((t) => {
+      if (alive) setTextures(t);
+      prewarmCardTextures();
+    });
     return () => {
       alive = false;
     };
@@ -136,7 +139,7 @@ export default function Stage(props: StageProps) {
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.05;
+          gl.toneMappingExposure = 1.0;
         }}
       >
         <StudioLighting />
@@ -151,6 +154,7 @@ export default function Stage(props: StageProps) {
                   reducedMotion={reducedMotion}
                   skipToken={skipToken}
                   stackRest={rest}
+                  tearSeed={opening?.id ?? 'sealed'}
                   onOpened={props.onOpened}
                   onSound={props.onSound}
                 />

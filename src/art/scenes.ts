@@ -5,7 +5,34 @@
 import { scytheOfVitur, thirdAgePickaxe, tumekensShadow, twistedBow } from './items';
 import { doc, H, linear, p, poly, radial, rand, rockBed, shade, W, type Pt } from './svg';
 
-const vig = (id = 'vig') => `<rect width="${W}" height="${H}" fill="url(#${id})"/>`;
+const vig = (id = 'vig') => `${VIG_START}<rect width="${W}" height="${H}" fill="url(#${id})"/>${VIG_END}`;
+/** Marks the boundary between background and subject layers. */
+const FG = '<!--FG-->';
+const VIG_START = '<!--VIG-->';
+const VIG_END = '<!--/VIG-->';
+
+export interface ArtLayers {
+  /** Full illustration. */
+  full: string;
+  /** Background only (with vignette): receives the holographic foil treatment. */
+  bg: string;
+  /** Subject only on a transparent background: its alpha is the subject mask. */
+  fg: string;
+}
+
+/** Splits a scene into background and subject documents at the FG marker. */
+export function splitLayers(svg: string): ArtLayers {
+  const defsEnd = svg.indexOf('</defs>') + '</defs>'.length;
+  const head = svg.slice(0, defsEnd);
+  const body = svg.slice(defsEnd, svg.lastIndexOf('</svg>'));
+  const vigMatch = body.match(/<!--VIG-->[\s\S]*?<!--\/VIG-->/);
+  const vigSvg = vigMatch ? vigMatch[0] : '';
+  const noVig = body.replace(vigSvg, '');
+  const at = noVig.indexOf(FG);
+  const bgBody = at >= 0 ? noVig.slice(0, at) : noVig;
+  const fgBody = at >= 0 ? noVig.slice(at + FG.length) : '';
+  return { full: svg, bg: `${head}${bgBody}${vigSvg}</svg>`, fg: `${head}${fgBody}</svg>` };
+}
 const vigDef = (id = 'vig', s = 0.7) =>
   radial(
     id,
@@ -188,6 +215,7 @@ export function greatOlm(): string {
       hole(320, 210, 150, 120) +
       hole(90, 230, 72, 66) +
       hole(550, 230, 72, 66) +
+      FG +
       head +
       claw(-1) +
       claw(1) +
@@ -287,6 +315,7 @@ export function verzikVitur(): string {
   return doc(
     defs,
     `<rect width="${W}" height="${H}" fill="url(#vzBg)"/>${arches}${web}<rect width="${W}" height="${H}" fill="url(#vzGlow)"/>` +
+      FG +
       floor +
       blood +
       legs +
@@ -384,6 +413,7 @@ export function theWardens(): string {
   return doc(
     defs,
     `<rect width="${W}" height="${H}" fill="url(#wdBg)"/><rect width="${W}" height="${H}" fill="url(#wdSun)"/>${columns}${hiero}` +
+      FG +
       warden(170, 1, '#2bb7ad', '#9ff5ec', '#c79b45') +
       warden(470, -1, '#f0a52c', '#ffe7a0', '#d8b04a') +
       beamSvg +
@@ -459,7 +489,7 @@ export function tzkalZuk(): string {
   ).join('');
   return doc(
     defs,
-    `<rect width="${W}" height="${H}" fill="url(#zkBg)"/>${caveWall}${zuk}<rect width="${W}" height="${H}" fill="url(#zkGlow)"/>${shield}${lava}${rocks}${embers}${vig()}`,
+    `<rect width="${W}" height="${H}" fill="url(#zkBg)"/>${caveWall}<rect width="${W}" height="${H}" fill="url(#zkGlow)"/>${FG}${zuk}${shield}${lava}${rocks}${embers}${vig()}`,
   );
 }
 
@@ -516,7 +546,7 @@ export function infernalCape(): string {
   const rocks = rockBed(51, 440, ['#140b0a', '#1d100d']);
   return doc(
     defs,
-    `<rect width="${W}" height="${H}" fill="url(#icBg)"/><rect width="${W}" height="${H}" fill="url(#icGlow)"/>${rocks}${pedestal}${cape}${veins}${blobs}${vig()}`,
+    `<rect width="${W}" height="${H}" fill="url(#icBg)"/><rect width="${W}" height="${H}" fill="url(#icGlow)"/>${rocks}${FG}${pedestal}${cape}${veins}${blobs}${vig()}`,
   );
 }
 
@@ -593,7 +623,7 @@ export function elysianSpiritShield(): string {
     p('0,430 640,430 640,470 0,470', '#0a1018') + `<ellipse cx="${cx}" cy="440" rx="120" ry="12" fill="#6fc8ff" opacity="0.25"/>`;
   return doc(
     defs,
-    `<rect width="${W}" height="${H}" fill="url(#esBg)"/><rect width="${W}" height="${H}" fill="url(#esGlow)"/>${floor}${motes}${rim}${body}${cross}${ring}${star}${starShade}${vig()}`,
+    `<rect width="${W}" height="${H}" fill="url(#esBg)"/><rect width="${W}" height="${H}" fill="url(#esGlow)"/>${floor}${motes}${FG}${rim}${body}${cross}${ring}${star}${starShade}${vig()}`,
   );
 }
 
@@ -636,7 +666,7 @@ export function twistedBowArt(): string {
   return doc(
     defs,
     `<rect width="${W}" height="${H}" fill="url(#tbBg)"/>${xericBackdrop()}<rect width="${W}" height="${H}" fill="url(#tbGlow)"/>` +
-      `<g transform="translate(326 236) rotate(-30) scale(0.84)">${twistedBow()}</g>${vig()}`,
+      `${FG}<g transform="translate(326 236) rotate(-30) scale(0.84)">${twistedBow()}</g>${vig()}`,
   );
 }
 
@@ -677,7 +707,7 @@ export function scytheArt(): string {
   return doc(
     defs,
     `<rect width="${W}" height="${H}" fill="url(#scBg)"/>${theatreBackdrop()}<rect width="${W}" height="${H}" fill="url(#scGlow)"/>` +
-      `<g transform="translate(400 270) rotate(4) scale(0.84)">${scytheOfVitur()}</g>${vig()}`,
+      `${FG}<g transform="translate(400 270) rotate(4) scale(0.84)">${scytheOfVitur()}</g>${vig()}`,
   );
 }
 
@@ -726,7 +756,7 @@ export function shadowArt(): string {
   return doc(
     defs,
     `<rect width="${W}" height="${H}" fill="url(#tsBg)"/>${shrineBackdrop()}<rect width="${W}" height="${H}" fill="url(#tsAura)"/>` +
-      `<g transform="translate(320 250) rotate(-12) scale(0.9)">${tumekensShadow()}</g>${vig()}`,
+      `${FG}<g transform="translate(320 250) rotate(-12) scale(0.9)">${tumekensShadow()}</g>${vig()}`,
   );
 }
 
@@ -775,7 +805,7 @@ export function pickaxeArt(): string {
   const parchment = '';
   return doc(
     defs,
-    `<rect width="${W}" height="${H}" fill="url(#pxBg)"/>${parchment}<rect width="${W}" height="${H}" fill="url(#pxGlow)"/>${casket}${coins}` +
+    `<rect width="${W}" height="${H}" fill="url(#pxBg)"/>${parchment}<rect width="${W}" height="${H}" fill="url(#pxGlow)"/>${FG}${casket}${coins}` +
       `<g transform="translate(318 196) rotate(-14) scale(0.8)">${thirdAgePickaxe()}</g>${sparkles}${vig()}`,
   );
 }

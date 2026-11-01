@@ -145,3 +145,24 @@ describe('NEW flags', () => {
     expect(computeNewFlags(pack, { 'verzik-vitur': 2 })).toEqual([true, false, false, true]);
   });
 });
+
+import { makeTearPath, PACK_W, TEAR_BASE } from '../src/three/packTear';
+
+describe('booster tear path', () => {
+  it('is deterministic per opening, irregular, mostly horizontal and not a regular zigzag', () => {
+    const a = makeTearPath('op_123');
+    const b = makeTearPath('op_123');
+    const c = makeTearPath('op_456');
+    expect(Array.from(a.samples)).toEqual(Array.from(b.samples));
+    expect(Array.from(a.samples)).not.toEqual(Array.from(c.samples));
+    const ys = Array.from(a.samples);
+    for (const y of ys) expect(Math.abs(y - TEAR_BASE)).toBeLessThan(0.02);
+    // no regular alternation: sign changes of the first difference are not evenly spaced
+    const diffs = ys.slice(1).map((y, i) => y - ys[i]);
+    const flips: number[] = [];
+    diffs.forEach((d, i) => i > 0 && Math.sign(d) !== Math.sign(diffs[i - 1]) && flips.push(i));
+    const gaps = flips.slice(1).map((f, i) => f - flips[i]);
+    expect(new Set(gaps).size).toBeGreaterThan(3);
+    expect(a.y(-PACK_W / 2)).toBeLessThan(a.y(0) + 0.01);
+  });
+});

@@ -728,7 +728,8 @@ dialog::backdrop {
   position: relative;
   height: min(70vh, 620px);
   border-radius: 6px;
-  background: radial-gradient(ellipse at 50% 45%, rgba(255, 200, 120, 0.14), transparent 60%), #120c07;
+  /* neutral, quieter than the card's holographic background */
+  background: radial-gradient(ellipse at 50% 42%, #26262a, #121214 60%, #0a0a0b);
 }
 .inspect-stage--2d {
   display: grid;
@@ -944,5 +945,58 @@ dialog::backdrop {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Development lab (dev builds or ?dev only) ---------- */
+.lab {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  height: 100vh;
+  gap: 10px;
+  padding: 10px;
+  background: #0c0c0e;
+}
+.lab__view {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #141416;
+}
+.lab__view .inspect-stage {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 42%, #26262a, #121214 60%, #0a0a0b);
+}
+.lab__panel {
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lab__panel h2,
+.lab__panel h3 {
+  margin: 4px 0;
+  font-family: var(--font-title);
+  color: var(--osrs-orange);
+}
+.lab__field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.lab__check {
+  font-size: 14px;
+}
+.footer__dev {
+  color: #8f7c5e;
+}
+@media (max-width: 860px) {
+  .lab {
+    grid-template-columns: 1fr;
+    grid-template-rows: 60vh auto;
+    height: auto;
   }
 }

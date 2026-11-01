@@ -1,6 +1,6 @@
 import type { CardDefinition, FrameStyle } from '../data/cards';
 import { SET_NAME } from '../data/cards';
-import { ART } from '../art/scenes';
+import { ART, splitLayers, type ArtLayers } from '../art/scenes';
 import {
   chamfer,
   ensureFonts,
@@ -228,7 +228,27 @@ function panel(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h
 export interface CardFaceOptions {
   /** Output scale (1 = 1024×1430). */
   scale?: number;
+  /** 'full' draws the whole illustration; 'subject' leaves the art background transparent. */
+  art?: 'full' | 'subject';
 }
+
+const layerCache = new Map<string, ArtLayers>();
+function layersFor(card: CardDefinition): ArtLayers {
+  let l = layerCache.get(card.art);
+  if (!l) {
+    l = splitLayers(ART[card.art]());
+    layerCache.set(card.art, l);
+  }
+  return l;
+}
+
+/** Card regions in texture pixels, used to build the material mask. */
+export const PANELS = [
+  { x: 50, y: 46, w: 924, h: 108 }, // name plate
+  { x: 50, y: 840, w: 924, h: 76 }, // type bar
+  { x: 50, y: 924, w: 924, h: 374 }, // text box
+  { x: 60, y: 1310, w: 904, h: 80 }, // footer text
+];
 
 /** Renders a complete card face. Text is baked for the 3D view; the HTML panel repeats it accessibly. */
 export async function renderCardFace(card: CardDefinition, opts: CardFaceOptions = {}): Promise<HTMLCanvasElement> {
@@ -277,10 +297,13 @@ export async function renderCardFace(card: CardDefinition, opts: CardFaceOptions
   chamfer(ctx, a.x - 5, a.y - 5, a.w + 10, a.h + 10, 14);
   ctx.fillStyle = f.accent2;
   ctx.fill();
-  const img = await svgImage(card.art, ART[card.art]);
+  const layers = layersFor(card);
+  const subjectOnly = opts.art === 'subject';
+  const img = subjectOnly ? await svgImage(`${card.art}#fg`, () => layers.fg) : await svgImage(card.art, () => layers.full);
   ctx.save();
   chamfer(ctx, a.x, a.y, a.w, a.h, 12);
   ctx.clip();
+  if (subjectOnly) ctx.clearRect(a.x, a.y, a.w, a.h);
   ctx.drawImage(img, a.x, a.y, a.w, a.h);
   ctx.restore();
   // corner gems
@@ -465,4 +488,74 @@ export async function renderCardBack(scale = 1): Promise<HTMLCanvasElement> {
   ctx.fillText('Unofficial fan project · not affiliated with Jagex', cx, H - 110);
   ctx.restore();
   return canvas;
+}
+
+
+export interface CardLayers {
+  /** Printed face: frame, panels, text and subject. Art background is transparent. */
+  print: HTMLCanvasElement;
+  /** Artwork background only (art-window aspect), sampled with slight parallax. */
+  background: HTMLCanvasElement;
+  /** R = metallic frame, G = text/panels, B = subject coverage (0–0.5) + foil accent (0.5–1). */
+  mask: HTMLCanvasElement;
+}
+
+/** Renders the separated layers used by the physical card material. */
+export async function renderCardLayers(card: CardDefinition, scale = 1): Promise<CardLayers> {
+  const print = await renderCardFace(card, { scale, art: 'subject' });
+  const layers = layersFor(card);
+  const bgImg = await svgImage(`${card.art}#bg`, () => layers.bg);
+  const fgImg = await svgImage(`${card.art}#fg`, () => layers.fg);
+  const bw = Math.round(ART_RECT.w * scale);
+  const bh = Math.round(ART_RECT.h * scale);
+  const [background, bctx] = makeCanvas(bw, bh);
+  bctx.drawImage(bgImg, 0, 0, bw, bh);
+
+  // Mask at half resolution: region data does not need full detail.
+  const ms = 0.5;
+  const MW = Math.round(CARD_W * ms);
+  const MH = Math.round(CARD_H * ms);
+  const channel = (draw: (c: CanvasRenderingContext2D) => void) => {
+    const [, c] = makeCanvas(MW, MH);
+    c.scale(ms, ms);
+    c.fillStyle = '#000';
+    c.fillRect(0, 0, CARD_W, CARD_H);
+    c.fillStyle = '#fff';
+    draw(c);
+    return c.getImageData(0, 0, MW, MH).data;
+  };
+  const a = ART_RECT;
+  const frame = channel((c) => {
+    c.fillRect(0, 0, CARD_W, CARD_H);
+    c.fillStyle = '#000';
+    for (const p of PANELS) c.fillRect(p.x, p.y, p.w, p.h);
+    c.fillRect(a.x - 2, a.y - 2, a.w + 4, a.h + 4);
+  });
+  const text = channel((c) => {
+    for (const p of PANELS) c.fillRect(p.x, p.y, p.w, p.h);
+  });
+  const [, sctx] = makeCanvas(MW, MH);
+  sctx.scale(ms, ms);
+  sctx.drawImage(fgImg, a.x, a.y, a.w, a.h);
+  const subject = sctx.getImageData(0, 0, MW, MH).data;
+  const [maskCanvas, mctx] = makeCanvas(MW, MH);
+  const out = mctx.createImageData(MW, MH);
+  for (let i = 0; i < out.data.length; i += 4) {
+    const r = subject[i];
+    const g = subject[i + 1];
+    const b = subject[i + 2];
+    const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    const sat = (Math.max(r, g, b) - Math.min(r, g, b)) / 255;
+    out.data[i] = frame[i];
+    out.data[i + 1] = text[i];
+    const alpha = subject[i + 3] / 255;
+    // Selective foil on bright metallic-looking parts of the subject (gold, silver, glowing details).
+    const accent = alpha > 0.5 ? Math.min(1, Math.max(0, (lum - 0.5) * 3 + (lum > 0.45 ? sat * 0.4 : 0))) : 0;
+    // B packs subject coverage (0..0.5) and accent strength (0.5..1); alpha stays opaque
+    // because canvas storage is premultiplied and would discard colour under zero alpha.
+    out.data[i + 2] = Math.round((alpha * 0.5 + accent * 0.5) * 255);
+    out.data[i + 3] = 255;
+  }
+  mctx.putImageData(out, 0, 0);
+  return { print, background, mask: maskCanvas };
 }

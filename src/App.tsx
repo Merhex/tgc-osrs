@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { devToolsEnabled, labRequested } from './dev/devFlags';
 import { setMuted, unlockAudio, play } from './audio/sound';
 import { useOpeningController } from './opening/useOpeningController';
 import { useReducedMotion } from './hooks/useReducedMotion';
@@ -7,7 +8,19 @@ import { CollectionLog } from './ui/CollectionLog';
 
 type View = 'packs' | 'collection';
 
-export default function App() {
+const DevLab = lazy(() => import('./dev/DevLab'));
+
+export default function Root() {
+  if (labRequested())
+    return (
+      <Suspense fallback={<p className="status">Loading dev lab…</p>}>
+        <DevLab />
+      </Suspense>
+    );
+  return <App />;
+}
+
+function App() {
   const ctl = useOpeningController();
   const [view, setView] = useState<View>('packs');
   const reducedMotion = useReducedMotion(ctl.settings.reducedMotion);
@@ -124,6 +137,11 @@ export default function App() {
       <footer className="footer">
         <span>Unofficial fan project; not affiliated with Jagex.</span>
         <span>Card rarities and odds are prototype settings for this fan game.</span>
+        {devToolsEnabled() && (
+          <a href={`?${import.meta.env.DEV ? '' : 'dev&'}lab`} className="footer__dev">
+            Dev lab
+          </a>
+        )}
       </footer>
     </div>
   );

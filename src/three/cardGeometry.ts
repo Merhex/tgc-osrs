@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 export const CARD_WIDTH = 0.63;
 export const CARD_HEIGHT = 0.88;
-export const CARD_THICKNESS = 0.0055;
+export const CARD_THICKNESS = 0.0068;
 const RADIUS = 0.028;
 
 function roundedShape(w: number, h: number, r: number): THREE.Shape {

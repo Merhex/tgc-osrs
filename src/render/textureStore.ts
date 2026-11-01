@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CARDS, getCard } from '../data/cards';
-import { renderCardBack, renderCardFace } from './cardFace';
+import { renderCardBack, renderCardFace, renderCardLayers, type CardLayers } from './cardFace';
+import type { CardFaceTextures } from '../three/cardMaterial';
 import { renderCrimp, renderPackBack, renderPackFront } from './packArt';
 
 import { canvasFor, textureScale } from './canvasCache';
@@ -32,6 +33,24 @@ export async function cardFaceTexture(cardId: string): Promise<THREE.CanvasTextu
   return toTexture(`face:${cardId}`, await cardFaceCanvas(cardId));
 }
 
+const layerCache = new Map<string, Promise<CardLayers>>();
+
+/** Separated print / background / mask textures for the physical card material. */
+export async function cardFaceTextures(cardId: string): Promise<CardFaceTextures> {
+  let p = layerCache.get(cardId);
+  if (!p) {
+    p = renderCardLayers(getCard(cardId), textureScale());
+    p.catch(() => layerCache.delete(cardId));
+    layerCache.set(cardId, p);
+  }
+  const layers = await p;
+  const print = toTexture(`face:${cardId}:print`, layers.print);
+  const background = toTexture(`face:${cardId}:bg`, layers.background);
+  const mask = textureCache.get(`face:${cardId}:mask`) ?? toTexture(`face:${cardId}:mask`, layers.mask);
+  mask.colorSpace = THREE.NoColorSpace;
+  return { print, background, mask };
+}
+
 export async function cardBackTexture(): Promise<THREE.CanvasTexture> {
   return toTexture('back', await cardBackCanvas());
 }
@@ -49,15 +68,36 @@ export async function packTextures(): Promise<PackTextures> {
   return { front: toTexture('pack:front', f), back: toTexture('pack:back', b), crimp };
 }
 
-/** Preloads every texture an opening needs. */
+/**
+ * Loads what the opening animation needs before it starts (pack and card back).
+ * Remaining faces continue in the background and are awaited per card by the reveal.
+ */
 export async function preloadOpening(cardIds: readonly string[]): Promise<void> {
-  await Promise.all([packTextures(), cardBackTexture(), ...Array.from(new Set(cardIds)).map(cardFaceTexture)]);
+  const unique = Array.from(new Set(cardIds));
+  await Promise.all([packTextures(), cardBackTexture()]);
+  // Faces render during the opening animation, in reveal order.
+  void unique.reduce((p, id) => p.then(() => cardFaceTextures(id).then(() => undefined)), Promise.resolve());
+}
+
+let prewarmStarted = false;
+/** Renders all card layers one at a time during idle periods after start-up. */
+export function prewarmCardTextures(): void {
+  if (prewarmStarted) return;
+  prewarmStarted = true;
+  const idle = (cb: () => void) => ('requestIdleCallback' in window ? window.requestIdleCallback(cb, { timeout: 2000 }) : setTimeout(cb, 200));
+  const ids = [...ALL_CARD_IDS];
+  const next = () => {
+    const id = ids.shift();
+    if (!id) return;
+    idle(() => void cardFaceTextures(id).finally(next));
+  };
+  setTimeout(() => idle(() => void Promise.all([packTextures(), cardBackTexture()]).finally(next)), 4000);
 }
 
 /** Frees GPU copies of card face textures (canvases stay cached and re-upload on demand). */
 export function releaseCardTextures(keep: readonly string[] = []): void {
   for (const [key, tex] of textureCache) {
-    if (key.startsWith('face:') && !keep.includes(key.slice(5))) tex.dispose();
+    if (key.startsWith('face:') && !keep.includes(key.split(':')[1])) tex.dispose();
   }
 }
 
