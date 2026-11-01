@@ -73,7 +73,13 @@ export default function DevLab() {
       <div className="lab__view">
         <Suspense fallback={<p className="status">Loading…</p>}>
           {mode === 'card' ? (
-            <InspectStage cardId={cardId} showBack={showBack} resetToken={reset} reducedMotion={false} fixedTilt={fixed ? { yaw, pitch } : null} />
+            <InspectStage
+              cardId={cardId}
+              showBack={showBack}
+              resetToken={reset}
+              reducedMotion={false}
+              fixedTilt={fixed ? { yaw, pitch } : null}
+            />
           ) : (
             <LabPackStage run={run} onTimeline={onTimeline} camera={camera} />
           )}
@@ -213,7 +219,14 @@ export default function DevLab() {
         {SLIDERS.map((s) => (
           <label key={s.key} className="lab__field">
             {s.label} {values[s.key].toFixed(2)}
-            <input type="range" min={s.min} max={s.max} step={s.step} value={values[s.key]} onChange={(e) => set(s.key, Number(e.target.value))} />
+            <input
+              type="range"
+              min={s.min}
+              max={s.max}
+              step={s.step}
+              value={values[s.key]}
+              onChange={(e) => set(s.key, Number(e.target.value))}
+            />
           </label>
         ))}
         <a className="btn btn--small" href={location.pathname + (import.meta.env.DEV ? '' : '?dev')}>

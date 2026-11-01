@@ -35,7 +35,10 @@ export const CardMesh = forwardRef<THREE.Group, Props>(function CardMesh({ cardI
   const card = getCard(cardId);
   const faceMat = useMemo(() => (face ? createCardFaceMaterial(card, face) : null), [card, face]);
   const backMat = sharedBackMaterial(back);
-  const edgeMat = useMemo(() => new THREE.MeshPhysicalMaterial({ ...edgeMaterialParams(card.rarity), emissive: new THREE.Color(0) }), [card.rarity]);
+  const edgeMat = useMemo(
+    () => new THREE.MeshPhysicalMaterial({ ...edgeMaterialParams(card.rarity), emissive: new THREE.Color(0) }),
+    [card.rarity],
+  );
   const edgeBase = useMemo(() => new THREE.Color(edgeMaterialParams(card.rarity).color as string), [card.rarity]);
 
   useEffect(() => () => faceMat?.dispose(), [faceMat]);

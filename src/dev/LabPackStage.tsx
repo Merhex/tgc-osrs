@@ -26,7 +26,15 @@ function fakeOpening(run: number): OpeningRecord {
   };
 }
 
-function Scene({ run, onTimeline, camera }: { run: number; onTimeline: (tl: gsap.core.Timeline | null) => void; camera: 'front' | 'close' | 'side' }) {
+function Scene({
+  run,
+  onTimeline,
+  camera,
+}: {
+  run: number;
+  onTimeline: (tl: gsap.core.Timeline | null) => void;
+  camera: 'front' | 'close' | 'side';
+}) {
   const [textures, setTextures] = useState<PackTextures | null>(null);
   const rotation = useRef<PackRotation>({ yaw: 0, pitch: 0, targetYaw: 0, targetPitch: 0, velocity: 0, dragging: false });
   const opening = useMemo(() => fakeOpening(run), [run]);
@@ -57,12 +65,24 @@ function Scene({ run, onTimeline, camera }: { run: number; onTimeline: (tl: gsap
         onOpened={() => undefined}
         onTimeline={onTimeline}
       />
-      <RevealCards key={`cards-${opening.id}`} opening={opening} phase="opening" revealIndex={0} reducedMotion={false} onCardShown={() => undefined} onAdvance={() => undefined} />
+      <RevealCards
+        key={`cards-${opening.id}`}
+        opening={opening}
+        phase="opening"
+        revealIndex={0}
+        reducedMotion={false}
+        onCardShown={() => undefined}
+        onAdvance={() => undefined}
+      />
     </>
   );
 }
 
-export default function LabPackStage(props: { run: number; onTimeline: (tl: gsap.core.Timeline | null) => void; camera: 'front' | 'close' | 'side' }) {
+export default function LabPackStage(props: {
+  run: number;
+  onTimeline: (tl: gsap.core.Timeline | null) => void;
+  camera: 'front' | 'close' | 'side';
+}) {
   return (
     <Canvas
       camera={{ position: [0, 0, CAMERA_Z], fov: CAMERA_FOV }}

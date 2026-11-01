@@ -84,7 +84,8 @@ let prewarmStarted = false;
 export function prewarmCardTextures(): void {
   if (prewarmStarted) return;
   prewarmStarted = true;
-  const idle = (cb: () => void) => ('requestIdleCallback' in window ? window.requestIdleCallback(cb, { timeout: 2000 }) : setTimeout(cb, 200));
+  const idle = (cb: () => void) =>
+    'requestIdleCallback' in window ? window.requestIdleCallback(cb, { timeout: 2000 }) : setTimeout(cb, 200);
   const ids = [...ALL_CARD_IDS];
   const next = () => {
     const id = ids.shift();

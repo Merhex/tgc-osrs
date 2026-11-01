@@ -36,7 +36,18 @@ export interface OpenAnim {
   stackSettle: number;
 }
 
-const zeroAnim = (): OpenAnim => ({ pinch: 0, tear: 0, tension: 0, broken: 0, away: 0, spread: 0, recoil: 0, stackUp: 0, wrapperAway: 0, stackSettle: 0 });
+const zeroAnim = (): OpenAnim => ({
+  pinch: 0,
+  tear: 0,
+  tension: 0,
+  broken: 0,
+  away: 0,
+  spread: 0,
+  recoil: 0,
+  stackUp: 0,
+  wrapperAway: 0,
+  stackSettle: 0,
+});
 
 function smoothstep(a: number, b: number, x: number) {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -48,7 +59,9 @@ function vnoise(x: number, y: number) {
 }
 /** Static surface wrinkles of the wrapper. */
 function wrinkle(x: number, y: number) {
-  return Math.sin(x * 23 + y * 7) * 0.5 + Math.sin(x * 9 - y * 17 + 1.3) * 0.35 + (vnoise(Math.floor(x * 30), Math.floor(y * 30)) - 0.5) * 0.4;
+  return (
+    Math.sin(x * 23 + y * 7) * 0.5 + Math.sin(x * 9 - y * 17 + 1.3) * 0.35 + (vnoise(Math.floor(x * 30), Math.floor(y * 30)) - 0.5) * 0.4
+  );
 }
 /** Pillow profile: zero at the side edges and at the seals. */
 function bulge(x: number, y: number) {
@@ -59,7 +72,8 @@ function bulge(x: number, y: number) {
 function restZ(x: number, y: number, side: 1 | -1) {
   const b = bulge(x, y);
   // irregular crimp creases, fading out before the seal so they do not read as a bright seam
-  const crease = 0.0018 * Math.sin(x * 61 + Math.sin(x * 23) * 2) * smoothstep(0.34, 0.44, Math.abs(y)) * (1 - smoothstep(0.45, HALF, Math.abs(y)));
+  const crease =
+    0.0018 * Math.sin(x * 61 + Math.sin(x * 23) * 2) * smoothstep(0.34, 0.44, Math.abs(y)) * (1 - smoothstep(0.45, HALF, Math.abs(y)));
   return side * (BULGE * b + 0.0022 * wrinkle(x, y) * b + crease * b);
 }
 
@@ -206,6 +220,7 @@ export function Pack({ textures, rotation, phase, reducedMotion, skipToken, stac
   restRef.current = stackRest;
   const curl = useMemo(() => new CurlTable(), []);
   const frame = useMemo(() => new Float32Array(9), []);
+  const lastSig = useRef('');
 
   const parts = useMemo(() => {
     const path = makeTearPath(tearSeed);
@@ -237,7 +252,13 @@ export function Pack({ textures, rotation, phase, reducedMotion, skipToken, stac
     return {
       front: foilMaterial(textures.front),
       back: foilMaterial(textures.back),
-      crimp: new THREE.MeshPhysicalMaterial({ map: textures.crimp, metalness: 0.75, roughness: 0.3, clearcoat: 0.3, side: THREE.DoubleSide }),
+      crimp: new THREE.MeshPhysicalMaterial({
+        map: textures.crimp,
+        metalness: 0.75,
+        roughness: 0.3,
+        clearcoat: 0.3,
+        side: THREE.DoubleSide,
+      }),
       edge: new THREE.MeshStandardMaterial({ color: '#d9dbe0', metalness: 1, roughness: 0.35, side: THREE.DoubleSide }),
     };
   }, [textures]);
@@ -280,7 +301,20 @@ export function Pack({ textures, rotation, phase, reducedMotion, skipToken, stac
         .call(() => cbs.current.onSound?.('tear'), [], 0.75)
         .to(a, { tear: 0.07, duration: 0.2, ease: 'power1.in' }, 0.75)
         // the split propagates with small hitches rather than a constant speed
-        .to(a, { keyframes: [{ tear: 0.26, duration: 0.3 }, { tear: 0.34, duration: 0.16 }, { tear: 0.6, duration: 0.32 }, { tear: 0.68, duration: 0.15 }, { tear: 0.93, duration: 0.3 }], ease: 'power1.inOut' }, 0.95)
+        .to(
+          a,
+          {
+            keyframes: [
+              { tear: 0.26, duration: 0.3 },
+              { tear: 0.34, duration: 0.16 },
+              { tear: 0.6, duration: 0.32 },
+              { tear: 0.68, duration: 0.15 },
+              { tear: 0.93, duration: 0.3 },
+            ],
+            ease: 'power1.inOut',
+          },
+          0.95,
+        )
         .to(a, { pinch: 0.4, duration: 0.6 }, 1.2)
         .to(a, { tension: 1, duration: 0.32, ease: 'power2.in' }, 2.18)
         .call(() => cbs.current.onSound?.('rustle'), [], 2.5)
@@ -334,21 +368,27 @@ export function Pack({ textures, rotation, phase, reducedMotion, skipToken, stac
     const recoil = Math.sin(a.recoil * Math.PI * 3) * (1 - a.recoil) * 0.025;
     g.rotation.set(r.pitch, r.yaw + idle, -0.03 * pull - 0.02 * a.pinch * (1 - a.broken) + recoil);
 
-    curl.update(0.25 + 0.75 * smoothstep(0, 0.5, a.tear) + 0.25 * a.tension);
-    const xf = -PACK_W / 2 + a.tear * PACK_W + (a.broken ? 0.4 : 0);
-    deformBody(parts.frontBody, a, xf, pull);
-    deformBody(parts.backBody, a, xf, pull);
-    for (const s of [parts.frontStrip, parts.backStrip, parts.crimpF, parts.crimpB]) deformStrip(s, a, xf, curl, frame, parts.path);
-    stitchNormals(parts.frontBody, parts.frontStrip, xf, a.broken > 0);
-    stitchNormals(parts.backBody, parts.backStrip, xf, a.broken > 0);
-    const opened = a.tear > 0.001;
-    if (opened) {
-      updateEdge(parts.edges.frontBody, parts.frontBody, parts.frontBody.rows);
-      updateEdge(parts.edges.backBody, parts.backBody, parts.backBody.rows);
-      updateEdge(parts.edges.frontStrip, parts.frontStrip, 0);
-      updateEdge(parts.edges.backStrip, parts.backStrip, 0);
+    // Only rebuild the foil when an animation channel changed (sealed/idle packs cost nothing).
+    const sig = `${a.pinch},${a.tear},${a.tension},${a.broken},${a.away},${a.spread},${a.recoil},${tearSeed}`;
+    const dirty = sig !== lastSig.current;
+    lastSig.current = sig;
+    if (dirty) {
+      curl.update(0.25 + 0.75 * smoothstep(0, 0.5, a.tear) + 0.25 * a.tension);
+      const xf = -PACK_W / 2 + a.tear * PACK_W + (a.broken ? 0.4 : 0);
+      deformBody(parts.frontBody, a, xf, pull);
+      deformBody(parts.backBody, a, xf, pull);
+      for (const s of [parts.frontStrip, parts.backStrip, parts.crimpF, parts.crimpB]) deformStrip(s, a, xf, curl, frame, parts.path);
+      stitchNormals(parts.frontBody, parts.frontStrip, xf, a.broken > 0);
+      stitchNormals(parts.backBody, parts.backStrip, xf, a.broken > 0);
+      const opened = a.tear > 0.001;
+      if (opened) {
+        updateEdge(parts.edges.frontBody, parts.frontBody, parts.frontBody.rows);
+        updateEdge(parts.edges.backBody, parts.backBody, parts.backBody.rows);
+        updateEdge(parts.edges.frontStrip, parts.frontStrip, 0);
+        updateEdge(parts.edges.backStrip, parts.backStrip, 0);
+      }
+      edgesVisible.current = opened;
     }
-    edgesVisible.current = opened;
 
     if (wrapper.current) {
       const w = a.wrapperAway;

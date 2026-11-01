@@ -20,7 +20,17 @@ interface Rot {
   hy: number;
 }
 
-function InspectCard({ cardId, rot, reducedMotion, fixedTilt }: { cardId: string; rot: React.MutableRefObject<Rot>; reducedMotion: boolean; fixedTilt?: { yaw: number; pitch: number } | null }) {
+function InspectCard({
+  cardId,
+  rot,
+  reducedMotion,
+  fixedTilt,
+}: {
+  cardId: string;
+  rot: React.MutableRefObject<Rot>;
+  reducedMotion: boolean;
+  fixedTilt?: { yaw: number; pitch: number } | null;
+}) {
   const [tex, setTex] = useState<{ face: CardFaceTextures; back: THREE.Texture } | null>(null);
   const group = useRef<THREE.Group>(null);
   const fx = useMemo(() => {

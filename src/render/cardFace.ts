@@ -490,7 +490,6 @@ export async function renderCardBack(scale = 1): Promise<HTMLCanvasElement> {
   return canvas;
 }
 
-
 export interface CardLayers {
   /** Printed face: frame, panels, text and subject. Art background is transparent. */
   print: HTMLCanvasElement;

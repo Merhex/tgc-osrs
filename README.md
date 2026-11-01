@@ -69,6 +69,37 @@ install button, or DevTools → Application → Service Workers → *Offline*, a
 Development aids: `?debug&freeze=2.2` pauses the opening animation at 2.2 s (for visual review);
 `?nowebgl` forces the 2D fallback.
 
+### Development material & animation lab
+
+Open `?lab` in `npm run dev` (or `?dev&lab` on a production build; it is hidden from players
+otherwise). It offers card selection, rarity-finish preview, roughness, clearcoat, environment
+intensity, holographic intensity, foil pattern scale and key-light position, plus pack-opening
+replay, a progress scrubber, slow motion (down to 0.1×) and close-up cameras. Replays use an
+in-memory pack and never touch the collection. URL shortcuts for screenshots:
+`?lab&card=twisted-bow&yaw=-0.5&pitch=0.15&rarity=Epic`, `?lab&mode=pack&cam=close&at=1.7`.
+
+### Card materials
+
+Each card face is a single `MeshPhysicalMaterial` surface extended in the shader (no coplanar
+layers): a printed layer (frame, text, subject), the artwork background sampled from its own
+texture with slight parallax and a subject contact shadow, a region mask (metal frame / text
+panels / subject / subject foil accents), per-card procedural foil patterns that perturb the
+surface normal, thin-film iridescence, a lighting-driven holographic term modulated by the
+printed ink, and a gently uneven clearcoat. Reflections come from an offline studio environment
+(softboxes plus a narrow strip light whose reflection travels across the card). Rarity finishes
+(`src/three/tuning.ts`): Rare — gloss, restrained metal border, subtle sheen; Epic — patterned
+holographic background; Legendary — layered foil, foil accents on the subject, reflective gilded
+border, deeper parallax.
+
+### Seal tear
+
+The wrapper and the top seal strip are separate subdivided meshes sharing one irregular tear
+boundary generated once per opening from its ID (`src/three/packTear.ts`). A corner pinch adds
+tension, the split propagates with small hitches, the strip bends and curls backward along an
+arc-length curve, holds near the far corner, breaks and is pulled away; the mouth spreads with a
+small recoil and the cards slide out. Normals are recomputed on every changed frame and stitched
+across the still-joined seam; thin foil-edge ribbons show the torn edge.
+
 ## Deployment (GitHub Pages)
 
 `.github/workflows/deploy.yml` runs the tests, type check and production build, then publishes `dist/`
@@ -122,11 +153,17 @@ are relative (`base: './'`), so no extra configuration is needed for the sub-pat
   stylised interpretations.
 - Card text is baked into textures at a fixed resolution (reduced on touch devices); the HTML panels
   carry the authoritative readable text.
-- The foil opening uses CPU vertex deformation of segmented sheets (no cloth simulation or true
-  tearing geometry); the tear edge is a growing jagged strip.
+- The seal tear is a deterministic, kinematic deformation (no cloth simulation); the strip curl is a
+  smooth parametric curve, so it reads slightly idealised in extreme close-ups.
+- Holographic finishes are an artistic approximation (thin-film iridescence plus a stylised
+  angle-driven term), not a spectral simulation. Subject foil accents come from a brightness mask,
+  so they follow light-coloured parts of each illustration rather than hand-painted regions.
+- Layered card textures are generated in the browser (about 1–3 s per card on a CPU-only
+  renderer). They are warmed during idle time and while the pack opens; on a slow device a card
+  may briefly show “Revealing…” before it flips.
 - A refresh during the wrapper animation resumes directly at the card reveal (the wrapper animation is
   not replayed).
 - Persistence is per browser/device; there is no export/import or sync.
 - Sound effects are simple synthesized cues.
-- Headless/software-rendered WebGL was used for automated browser checks; real-device GPU performance
-  has not been profiled.
+- Automated checks used software WebGL (SwiftShader, ~3–6 fps); real-device GPU performance has not
+  been profiled.
