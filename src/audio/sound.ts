@@ -30,7 +30,16 @@ function noiseBuffer(c: AudioContext, seconds: number): AudioBuffer {
   return buf;
 }
 
-function noise(c: AudioContext, t: number, dur: number, freq: number, q: number, gain: number, type: BiquadFilterType = 'bandpass', crackle = false) {
+function noise(
+  c: AudioContext,
+  t: number,
+  dur: number,
+  freq: number,
+  q: number,
+  gain: number,
+  type: BiquadFilterType = 'bandpass',
+  crackle = false,
+) {
   const src = c.createBufferSource();
   src.buffer = noiseBuffer(c, dur);
   const f = c.createBiquadFilter();

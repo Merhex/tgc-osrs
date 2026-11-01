@@ -102,7 +102,22 @@ export function RevealCards({ opening, phase, revealIndex, reducedMotion, onCard
       Object.assign(p, readPose(g));
       modes.current[k] = 'tween';
       const target = pileCardPose(L.pile, k);
-      tl.to(p, { x: target.x, y: target.y, z: target.z, s: target.s, rz: target.rz, rx: 0, ry: 0, duration: 0.45 * speed, ease: 'power2.inOut', onComplete: () => void (modes.current[k] = 'pile') }, 0);
+      tl.to(
+        p,
+        {
+          x: target.x,
+          y: target.y,
+          z: target.z,
+          s: target.s,
+          rz: target.rz,
+          rx: 0,
+          ry: 0,
+          duration: 0.45 * speed,
+          ease: 'power2.inOut',
+          onComplete: () => void (modes.current[k] = 'pile'),
+        },
+        0,
+      );
       tl.to(fxs[k], { glow: 0, foilBoost: 0, strength: 0.25, duration: 0.4 * speed }, 0);
       tl.call(() => cbs.current.onSound?.('whoosh'), [], 0);
     }

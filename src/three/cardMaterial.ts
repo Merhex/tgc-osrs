@@ -169,7 +169,10 @@ export interface CardMaterialUniforms {
   uBrightness: THREE.IUniform<number>;
 }
 
-export function createCardFaceMaterial(card: CardDefinition, map: THREE.Texture): THREE.ShaderMaterial & { uniforms: CardMaterialUniforms } {
+export function createCardFaceMaterial(
+  card: CardDefinition,
+  map: THREE.Texture,
+): THREE.ShaderMaterial & { uniforms: CardMaterialUniforms } {
   const uniforms: CardMaterialUniforms = {
     map: { value: map },
     uTime: { value: 0 },

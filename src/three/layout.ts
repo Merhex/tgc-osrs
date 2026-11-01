@@ -20,7 +20,7 @@ export function revealLayout(viewport: { width: number; height: number }) {
   const side = Math.min(0.78, viewport.width / 2 - 0.22);
   const sideScale = portrait ? 0.42 : 0.72;
   const sideY = portrait ? -viewport.height / 2 + 0.24 : -0.06;
-    // visible height at the face-up card's depth (z = 0.55) is ~83% of the height at z = 0
+  // visible height at the face-up card's depth (z = 0.55) is ~83% of the height at z = 0
   const centerScale = Math.min(1.45, (viewport.height * 0.83 * (portrait ? 0.62 : 0.84)) / 0.88);
   return {
     center: { x: 0, y: portrait ? 0.14 : 0.03, z: 0.55, rx: 0, ry: 0, rz: 0, s: centerScale } as Pose,
@@ -33,7 +33,7 @@ export function revealLayout(viewport: { width: number; height: number }) {
 export function stackCardPose(base: Pose, k: number, total = 10): Pose {
   // The first card to be revealed sits on top (closest to the camera).
   const depth = (total - 1 - k) * CARD_THICKNESS * 1.25 * base.s;
-  return { ...base, z: base.z + depth, rz: base.rz + ((k * 37) % 7 - 3) * 0.003 };
+  return { ...base, z: base.z + depth, rz: base.rz + (((k * 37) % 7) - 3) * 0.003 };
 }
 
 export function pileCardPose(base: Pose, k: number): Pose {

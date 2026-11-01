@@ -20,7 +20,9 @@ interface Props {
 export default function Fallback2D({ phase, opening, revealIndex, reducedMotion, skipToken, onOpened, onCardShown, onAdvance }: Props) {
   const [pack, setPack] = useState<string | null>(null);
   useEffect(() => {
-    packFrontUrl().then(setPack).catch(() => setPack(null));
+    packFrontUrl()
+      .then(setPack)
+      .catch(() => setPack(null));
   }, []);
 
   useEffect(() => {
@@ -44,13 +46,29 @@ export default function Fallback2D({ phase, opening, revealIndex, reducedMotion,
         </div>
       )}
       {phase === 'revealing' && opening && (
-        <FallbackCard key={revealIndex} cardId={opening.cards[revealIndex].cardId} onShown={onCardShown} onClick={onAdvance} reducedMotion={reducedMotion} />
+        <FallbackCard
+          key={revealIndex}
+          cardId={opening.cards[revealIndex].cardId}
+          onShown={onCardShown}
+          onClick={onAdvance}
+          reducedMotion={reducedMotion}
+        />
       )}
     </div>
   );
 }
 
-function FallbackCard({ cardId, onShown, onClick, reducedMotion }: { cardId: string; onShown: () => void; onClick: () => void; reducedMotion: boolean }) {
+function FallbackCard({
+  cardId,
+  onShown,
+  onClick,
+  reducedMotion,
+}: {
+  cardId: string;
+  onShown: () => void;
+  onClick: () => void;
+  reducedMotion: boolean;
+}) {
   const face = useCardImage(cardId);
   const back = useCardImage('back');
   const card = getCard(cardId);
@@ -60,7 +78,11 @@ function FallbackCard({ cardId, onShown, onClick, reducedMotion }: { cardId: str
     return () => clearTimeout(t);
   }, [face]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <button className={`fallback-card ${face ? 'fallback-card--flip' : ''} ${card.rarity === 'Legendary' ? 'fallback-card--legendary' : ''}`} onClick={onClick} aria-label={`${card.name}. Activate to continue.`}>
+    <button
+      className={`fallback-card ${face ? 'fallback-card--flip' : ''} ${card.rarity === 'Legendary' ? 'fallback-card--legendary' : ''}`}
+      onClick={onClick}
+      aria-label={`${card.name}. Activate to continue.`}
+    >
       <span className="fallback-card__inner">
         <span className="fallback-card__back">{back && <img src={back} alt="" />}</span>
         <span className="fallback-card__face">{face && <img src={face} alt="" />}</span>

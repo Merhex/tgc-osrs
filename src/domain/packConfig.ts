@@ -34,10 +34,7 @@ export const PROTOTYPE_BOOSTER: PackConfig = {
 export const SHOWCASE_PACK: PackConfig = {
   id: 'showcase',
   label: 'Development Showcase Pack',
-  slots: [
-    ...Array.from({ length: 6 }, () => ({ weights: { Rare: 1, Epic: 1 } })),
-    ...Array.from({ length: 4 }, () => legendary),
-  ],
+  slots: [...Array.from({ length: 6 }, () => ({ weights: { Rare: 1, Epic: 1 } })), ...Array.from({ length: 4 }, () => legendary)],
   allowDuplicatesWithinPack: false,
   development: true,
 };

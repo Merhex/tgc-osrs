@@ -31,16 +31,16 @@ interface Props {
 
 const edgeBase = new THREE.Color('#efe4c8');
 
-export const CardMesh = forwardRef<THREE.Group, Props>(function CardMesh(
-  { cardId, face, back, fx, onClick, name },
-  ref,
-) {
+export const CardMesh = forwardRef<THREE.Group, Props>(function CardMesh({ cardId, face, back, fx, onClick, name }, ref) {
   const geo = cardGeometries();
   const card = getCard(cardId);
   const baseFoil = card.rarity === 'Legendary' ? 1 : card.rarity === 'Epic' ? 0.25 : 0;
   const faceMat = useMemo(() => (face ? createCardFaceMaterial(card, face) : null), [card, face]);
   const backMat = useMemo(() => new THREE.MeshStandardMaterial({ map: back, roughness: 0.55, metalness: 0.15 }), [back]);
-  const edgeMat = useMemo(() => new THREE.MeshStandardMaterial({ color: edgeBase, roughness: 0.6, emissive: new THREE.Color(0), emissiveIntensity: 1 }), []);
+  const edgeMat = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: edgeBase, roughness: 0.6, emissive: new THREE.Color(0), emissiveIntensity: 1 }),
+    [],
+  );
 
   useEffect(() => () => faceMat?.dispose(), [faceMat]);
   useEffect(() => () => backMat.dispose(), [backMat]);

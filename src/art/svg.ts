@@ -153,5 +153,8 @@ export function rockBed(seed: number, y: number, colors: string[], count = 14, w
 
 /** Simple radial vignette overlay. */
 export function vignette(id = 'vig', strength = 0.65, w = W, h = H): string {
-  return `${`<defs>${radial(id, [[0.55, '#000', 0], [1, '#000', strength]])}</defs>`}<rect width="${w}" height="${h}" fill="url(#${id})"/>`;
+  return `${`<defs>${radial(id, [
+    [0.55, '#000', 0],
+    [1, '#000', strength],
+  ])}</defs>`}<rect width="${w}" height="${h}" fill="url(#${id})"/>`;
 }

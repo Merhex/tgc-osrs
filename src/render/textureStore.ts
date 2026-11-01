@@ -7,7 +7,6 @@ import { canvasFor, textureScale } from './canvasCache';
 
 const textureCache = new Map<string, THREE.CanvasTexture>();
 
-
 function toTexture(key: string, canvas: HTMLCanvasElement): THREE.CanvasTexture {
   let tex = textureCache.get(key);
   if (!tex) {
@@ -44,10 +43,7 @@ export interface PackTextures {
 }
 
 export async function packTextures(): Promise<PackTextures> {
-  const [f, b] = await Promise.all([
-    canvasFor('pack:front', renderPackFront),
-    canvasFor('pack:back', renderPackBack),
-  ]);
+  const [f, b] = await Promise.all([canvasFor('pack:front', renderPackFront), canvasFor('pack:back', renderPackBack)]);
   const crimp = toTexture('pack:crimp', renderCrimp());
   crimp.wrapS = THREE.RepeatWrapping;
   return { front: toTexture('pack:front', f), back: toTexture('pack:back', b), crimp };

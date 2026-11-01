@@ -22,7 +22,11 @@ function Entry({ card, owned, onInspect }: { card: CardDefinition; owned: number
         className="log-entry__btn"
         onClick={onInspect}
         disabled={!has}
-        aria-label={has ? `${card.number} ${card.name}, ${card.rarity}, owned ×${owned}. Inspect.` : `${card.number} ${card.name}, ${card.rarity}, not yet collected.`}
+        aria-label={
+          has
+            ? `${card.number} ${card.name}, ${card.rarity}, owned ×${owned}. Inspect.`
+            : `${card.number} ${card.name}, ${card.rarity}, not yet collected.`
+        }
       >
         <span className="log-entry__img">{url ? <img src={url} alt="" /> : <span className="img-placeholder" />}</span>
         <span className="log-entry__num">{card.number}</span>
@@ -68,7 +72,14 @@ export function CollectionLog({ collection, stats, reducedMotion, canReset, onRe
             <dd>{stats.packsOpened}</dd>
           </div>
         </dl>
-        <div className="progress" role="progressbar" aria-label="Unique cards collected" aria-valuemin={0} aria-valuemax={CARDS.length} aria-valuenow={unique}>
+        <div
+          className="progress"
+          role="progressbar"
+          aria-label="Unique cards collected"
+          aria-valuemin={0}
+          aria-valuemax={CARDS.length}
+          aria-valuenow={unique}
+        >
           <span style={{ width: `${(unique / CARDS.length) * 100}%` }} />
         </div>
       </header>
@@ -149,7 +160,9 @@ export function CollectionLog({ collection, stats, reducedMotion, canReset, onRe
         </form>
       </dialog>
 
-      {inspect && <InspectDialog cardId={inspect} owned={collection[inspect] ?? 0} reducedMotion={reducedMotion} onClose={() => setInspect(null)} />}
+      {inspect && (
+        <InspectDialog cardId={inspect} owned={collection[inspect] ?? 0} reducedMotion={reducedMotion} onClose={() => setInspect(null)} />
+      )}
     </section>
   );
 }

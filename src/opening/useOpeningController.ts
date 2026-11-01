@@ -1,14 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { generatePack } from '../domain/packGenerator';
 import { newId, cryptoRng } from '../domain/random';
-import {
-  DEFAULT_SETTINGS,
-  pendingDraftStore,
-  Repository,
-  type OpeningDraft,
-  type Settings,
-  type Stats,
-} from '../persistence/repository';
+import { DEFAULT_SETTINGS, pendingDraftStore, Repository, type OpeningDraft, type Settings, type Stats } from '../persistence/repository';
 import { hasWebGL } from '../hooks/webgl';
 import { durableRevealIndex, initialOpeningState, openingReducer } from './machine';
 

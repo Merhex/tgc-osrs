@@ -6,7 +6,17 @@ import { CardDetails } from './CardDetails';
 
 const InspectStage = lazy(() => import('../three/InspectStage'));
 
-export function InspectDialog({ cardId, owned, reducedMotion, onClose }: { cardId: string; owned: number; reducedMotion: boolean; onClose: () => void }) {
+export function InspectDialog({
+  cardId,
+  owned,
+  reducedMotion,
+  onClose,
+}: {
+  cardId: string;
+  owned: number;
+  reducedMotion: boolean;
+  onClose: () => void;
+}) {
   const ref = useRef<HTMLDialogElement>(null);
   const [showBack, setShowBack] = useState(false);
   const [resetToken, setResetToken] = useState(0);
@@ -30,7 +40,9 @@ export function InspectDialog({ cardId, owned, reducedMotion, onClose }: { cardI
               <InspectStage cardId={cardId} showBack={showBack} resetToken={resetToken} reducedMotion={reducedMotion} />
             </Suspense>
           ) : (
-            <div className="inspect-stage inspect-stage--2d">{(showBack ? back : face) && <img src={(showBack ? back : face)!} alt={showBack ? 'Card back' : `${card.name} card front`} />}</div>
+            <div className="inspect-stage inspect-stage--2d">
+              {(showBack ? back : face) && <img src={(showBack ? back : face)!} alt={showBack ? 'Card back' : `${card.name} card front`} />}
+            </div>
           )}
           <div className="controls__row">
             <button className="btn" onClick={() => setShowBack((b) => !b)} aria-pressed={showBack}>

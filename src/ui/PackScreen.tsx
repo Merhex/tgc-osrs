@@ -91,7 +91,12 @@ export function PackScreen({ ctl, reducedMotion, onViewCollection }: Props) {
             <fieldset className="mode-select">
               <legend>Pack type</legend>
               <label>
-                <input type="radio" name="mode" checked={state.mode === 'prototype-booster'} onChange={() => ctl.setMode('prototype-booster')} />
+                <input
+                  type="radio"
+                  name="mode"
+                  checked={state.mode === 'prototype-booster'}
+                  onChange={() => ctl.setMode('prototype-booster')}
+                />
                 Prototype Booster <small>(9 Rare/Epic + guaranteed Legendary)</small>
               </label>
               <label>

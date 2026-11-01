@@ -27,7 +27,10 @@ export function RevealPanel({ opening, index, busy, onNext }: Props) {
         ) : (
           <>
             {card.rarity === 'Legendary' && (
-              <p className="legendary-banner" style={{ ['--accent' as string]: card.frame.accent, ['--accent2' as string]: card.frame.accent2 }}>
+              <p
+                className="legendary-banner"
+                style={{ ['--accent' as string]: card.frame.accent, ['--accent2' as string]: card.frame.accent2 }}
+              >
                 ★ Legendary ★
               </p>
             )}

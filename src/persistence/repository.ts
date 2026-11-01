@@ -61,7 +61,10 @@ const META_ACTIVE = 'activeOpeningId';
 const META_SETTINGS = 'settings';
 
 export class StorageError extends Error {
-  constructor(message: string, readonly cause?: unknown) {
+  constructor(
+    message: string,
+    readonly cause?: unknown,
+  ) {
     super(message);
     this.name = 'StorageError';
   }
@@ -108,9 +111,7 @@ export class Repository {
       ]);
       let activeOpening: OpeningRecord | null = null;
       if (activeRow?.value) {
-        const rec = await promisify(
-          tx.objectStore(STORES.openings).get(activeRow.value) as IDBRequest<OpeningRecord | undefined>,
-        );
+        const rec = await promisify(tx.objectStore(STORES.openings).get(activeRow.value) as IDBRequest<OpeningRecord | undefined>);
         if (rec && rec.status !== 'complete') activeOpening = rec;
       }
       await txDone(tx);

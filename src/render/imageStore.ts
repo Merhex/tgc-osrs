@@ -23,4 +23,3 @@ export function cardImageUrl(cardId: string | 'back'): Promise<string> {
 export function packFrontUrl(): Promise<string> {
   return canvasFor('pack:front', renderPackFront).then((c) => c.toDataURL('image/webp', 0.85));
 }
-

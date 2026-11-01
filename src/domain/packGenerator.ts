@@ -165,8 +165,14 @@ function generateWithoutReplacement(config: PackConfig, rng: Rng, pool: Pool): C
  * remaining Legendary in slot 10.
  */
 export function generateShowcasePack(rng: Rng, pool: Pool = CARDS): CardInstance[] {
-  const nonLegendary = shuffle(pool.filter((c) => c.rarity !== 'Legendary'), rng);
-  const legendaries = shuffle(pool.filter((c) => c.rarity === 'Legendary'), rng);
+  const nonLegendary = shuffle(
+    pool.filter((c) => c.rarity !== 'Legendary'),
+    rng,
+  );
+  const legendaries = shuffle(
+    pool.filter((c) => c.rarity === 'Legendary'),
+    rng,
+  );
   if (nonLegendary.length !== 6 || legendaries.length !== 4) {
     throw new PackConfigError('Showcase pack expects 6 non-legendary and 4 legendary definitions.');
   }

@@ -49,7 +49,17 @@ function InspectCard({ cardId, rot, reducedMotion }: { cardId: string; rot: Reac
   );
 }
 
-export default function InspectStage({ cardId, showBack, resetToken, reducedMotion }: { cardId: string; showBack: boolean; resetToken: number; reducedMotion: boolean }) {
+export default function InspectStage({
+  cardId,
+  showBack,
+  resetToken,
+  reducedMotion,
+}: {
+  cardId: string;
+  showBack: boolean;
+  resetToken: number;
+  reducedMotion: boolean;
+}) {
   const visible = usePageVisible();
   const rot = useRef<Rot>({ yaw: 0, pitch: 0, tYaw: 0, tPitch: 0 });
   const drag = useRef<{ id: number; x: number; y: number } | null>(null);
@@ -99,10 +109,15 @@ export default function InspectStage({ cardId, showBack, resetToken, reducedMoti
       role="img"
       aria-label={`3D view of ${getCard(cardId).name}. Drag or use arrow keys to tilt and turn the card.`}
     >
-      <Canvas dpr={[1, maxDpr()]} frameloop={visible ? 'always' : 'never'} camera={{ position: [0, 0, 3.2], fov: 35 }} gl={{ antialias: true, alpha: true }}
+      <Canvas
+        dpr={[1, maxDpr()]}
+        frameloop={visible ? 'always' : 'never'}
+        camera={{ position: [0, 0, 3.2], fov: 35 }}
+        gl={{ antialias: true, alpha: true }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
-        }}>
+        }}
+      >
         <StudioLighting />
         <InspectCard cardId={cardId} rot={rot} reducedMotion={reducedMotion} />
         <ContactShadows position={[0, -0.8, 0]} opacity={0.4} scale={4} blur={2.5} far={1.5} resolution={256} />

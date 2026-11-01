@@ -76,7 +76,13 @@ describe('showcase pack', () => {
   });
 
   it('shuffles the order between packs', () => {
-    const orders = new Set(Array.from({ length: 20 }, (_, i) => generateShowcasePack(seededRng(i)).map((c) => c.cardId).join()));
+    const orders = new Set(
+      Array.from({ length: 20 }, (_, i) =>
+        generateShowcasePack(seededRng(i))
+          .map((c) => c.cardId)
+          .join(),
+      ),
+    );
     expect(orders.size).toBeGreaterThan(10);
   });
 });

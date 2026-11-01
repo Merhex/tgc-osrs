@@ -16,7 +16,10 @@ export function ensureFonts(): Promise<void> {
             document.fonts.load(`400 30px ${FONT_BODY}`),
             document.fonts.load(`italic 400 30px ${FONT_BODY}`),
             document.fonts.load(`700 30px ${FONT_BODY}`),
-          ]).then(() => undefined, () => undefined);
+          ]).then(
+            () => undefined,
+            () => undefined,
+          );
   }
   return fontsReady;
 }

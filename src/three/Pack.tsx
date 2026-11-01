@@ -50,9 +50,7 @@ function vnoise(x: number, y: number) {
 }
 function wrinkle(x: number, y: number) {
   return (
-    Math.sin(x * 23 + y * 7) * 0.5 +
-    Math.sin(x * 9 - y * 17 + 1.3) * 0.35 +
-    (vnoise(Math.floor(x * 30), Math.floor(y * 30)) - 0.5) * 0.4
+    Math.sin(x * 23 + y * 7) * 0.5 + Math.sin(x * 9 - y * 17 + 1.3) * 0.35 + (vnoise(Math.floor(x * 30), Math.floor(y * 30)) - 0.5) * 0.4
   );
 }
 
@@ -190,7 +188,13 @@ export function Pack({ textures, rotation, phase, reducedMotion, skipToken, stac
   }, []);
 
   const mats = useMemo(() => {
-    const crimp = new THREE.MeshPhysicalMaterial({ map: textures.crimp, metalness: 0.8, roughness: 0.28, side: THREE.DoubleSide, envMapIntensity: 1.3 });
+    const crimp = new THREE.MeshPhysicalMaterial({
+      map: textures.crimp,
+      metalness: 0.8,
+      roughness: 0.28,
+      side: THREE.DoubleSide,
+      envMapIntensity: 1.3,
+    });
     textures.crimp.repeat.set(4, 1);
     return {
       front: foilMaterial(textures.front),
@@ -220,7 +224,18 @@ export function Pack({ textures, rotation, phase, reducedMotion, skipToken, stac
         onOpenedRef.current();
       },
     });
-    tl.to(rot, { yaw: Math.round(rot.yaw / (Math.PI * 2)) * Math.PI * 2, targetYaw: Math.round(rot.yaw / (Math.PI * 2)) * Math.PI * 2, pitch: 0, targetPitch: 0, duration: 0.35, ease: 'power2.out' }, 0)
+    tl.to(
+      rot,
+      {
+        yaw: Math.round(rot.yaw / (Math.PI * 2)) * Math.PI * 2,
+        targetYaw: Math.round(rot.yaw / (Math.PI * 2)) * Math.PI * 2,
+        pitch: 0,
+        targetPitch: 0,
+        duration: 0.35,
+        ease: 'power2.out',
+      },
+      0,
+    )
       .to(a, { settle: 1, duration: 0.45, ease: 'back.out(2)' }, 0)
       .to(a, { stretch: 1, duration: 0.45, ease: 'power1.inOut' }, 0.4)
       .call(() => onSound?.('tear'), [], 0.85)
@@ -235,7 +250,8 @@ export function Pack({ textures, rotation, phase, reducedMotion, skipToken, stac
       .to(a, { stackSettle: 1, duration: 0.75, ease: 'power3.inOut' }, 3.5);
     if (reducedMotion) tl.timeScale(4);
     // Development aid: ?freeze=<seconds> pauses the opening at that moment for visual review.
-    const freeze = import.meta.env.DEV || new URLSearchParams(location.search).has('debug') ? new URLSearchParams(location.search).get('freeze') : null;
+    const freeze =
+      import.meta.env.DEV || new URLSearchParams(location.search).has('debug') ? new URLSearchParams(location.search).get('freeze') : null;
     if (freeze) tl.pause(Number(freeze));
     timeline.current = tl;
     return () => {

@@ -108,7 +108,11 @@ export function scytheOfVitur(): string {
   const shaftA: Pt = [86, 232];
   const shaftB: Pt = [-14, -206];
   const shaftPts = Array.from({ length: 14 }, (_, i) => along(shaftA, shaftB, i / 13));
-  const shaft = ribbon(shaftPts, () => 15, (i, _t, s) => (i % 4 === 2 ? (s ? '#8d1420' : '#b51e2c') : s ? '#1f1e23' : '#3b3a42'));
+  const shaft = ribbon(
+    shaftPts,
+    () => 15,
+    (i, _t, s) => (i % 4 === 2 ? (s ? '#8d1420' : '#b51e2c') : s ? '#1f1e23' : '#3b3a42'),
+  );
   const outer = curve(
     [
       [-14, -216],
@@ -226,7 +230,11 @@ export function tumekensShadow(): string {
       ],
       16,
     );
-    return ribbon(c, (t) => 16 - t * 12, (i, _t, s) => (s === (dir > 0 ? 1 : 0) ? '#9b6d1d' : i % 2 ? '#f0c55c' : '#d9a640'));
+    return ribbon(
+      c,
+      (t) => 16 - t * 12,
+      (i, _t, s) => (s === (dir > 0 ? 1 : 0) ? '#9b6d1d' : i % 2 ? '#f0c55c' : '#d9a640'),
+    );
   };
   const frond = (dir: 1 | -1, k: number) => {
     const bx = dir * (60 + k * 16);
@@ -322,8 +330,10 @@ export function thirdAgePickaxe(): string {
   const d: Pt = [dir[0] / len, dir[1] / len];
   const perp: Pt = [-d[1], d[0]];
   const handlePts = Array.from({ length: 12 }, (_, i) => along(base, top, i / 11));
-  const handle = ribbon(handlePts, () => 18, (i, _t, s) =>
-    i === 0 || i === 5 || i === 10 ? (s ? '#b38a2a' : '#f0cf6e') : s ? '#5d4a3a' : '#87705a',
+  const handle = ribbon(
+    handlePts,
+    () => 18,
+    (i, _t, s) => (i === 0 || i === 5 || i === 10 ? (s ? '#b38a2a' : '#f0cf6e') : s ? '#5d4a3a' : '#87705a'),
   );
   const head: Pt[] = [];
   const headLow: Pt[] = [];

@@ -289,7 +289,8 @@ export async function renderCardFace(card: CardDefinition, opts: CardFaceOptions
     [a.x + a.w, a.y],
     [a.x, a.y + a.h],
     [a.x + a.w, a.y + a.h],
-  ]) gem(ctx, x, y, 16, f.accent);
+  ])
+    gem(ctx, x, y, 16, f.accent);
 
   // Type bar: category · source + rarity label (text, not just colour)
   panel(ctx, 56, 846, CARD_W - 112, 64, 'dark', 12);
@@ -342,7 +343,8 @@ export async function renderCardFace(card: CardDefinition, opts: CardFaceOptions
 
   // Footer
   ctx.textAlign = 'left';
-  ctx.fillStyle = f.motif === 'paleFoil' || f.motif === 'silver' || f.motif === 'goldFoil' || f.motif === 'sandstone' ? '#2a1d10' : '#e8d6a8';
+  ctx.fillStyle =
+    f.motif === 'paleFoil' || f.motif === 'silver' || f.motif === 'goldFoil' || f.motif === 'sandstone' ? '#2a1d10' : '#e8d6a8';
   ctx.font = `700 24px ${FONT_TITLE}`;
   ctx.fillText(`${card.number}/010 · ${SET_NAME}`, 70, 1336);
   ctx.font = `400 20px ${FONT_BODY}`;

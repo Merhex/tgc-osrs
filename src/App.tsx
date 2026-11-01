@@ -54,20 +54,35 @@ export default function App() {
           </div>
         </div>
         <nav aria-label="Main" className="tabs">
-          <button className={`tab ${view === 'packs' ? 'tab--active' : ''}`} aria-current={view === 'packs' ? 'page' : undefined} onClick={() => go('packs')}>
+          <button
+            className={`tab ${view === 'packs' ? 'tab--active' : ''}`}
+            aria-current={view === 'packs' ? 'page' : undefined}
+            onClick={() => go('packs')}
+          >
             Open Packs{inProgress && view !== 'packs' ? ' •' : ''}
           </button>
-          <button className={`tab ${view === 'collection' ? 'tab--active' : ''}`} aria-current={view === 'collection' ? 'page' : undefined} onClick={() => go('collection')}>
+          <button
+            className={`tab ${view === 'collection' ? 'tab--active' : ''}`}
+            aria-current={view === 'collection' ? 'page' : undefined}
+            onClick={() => go('collection')}
+          >
             Collection Log
           </button>
         </nav>
         <div className="settings" role="group" aria-label="Settings">
-          <button className="btn btn--small" aria-pressed={!ctl.settings.muted} onClick={() => ctl.updateSettings({ muted: !ctl.settings.muted })}>
+          <button
+            className="btn btn--small"
+            aria-pressed={!ctl.settings.muted}
+            onClick={() => ctl.updateSettings({ muted: !ctl.settings.muted })}
+          >
             {ctl.settings.muted ? '🔇 Sound off' : '🔊 Sound on'}
           </button>
           <label className="select-small">
             <span>Motion</span>
-            <select value={ctl.settings.reducedMotion} onChange={(e) => ctl.updateSettings({ reducedMotion: e.target.value as 'system' | 'on' | 'off' })}>
+            <select
+              value={ctl.settings.reducedMotion}
+              onChange={(e) => ctl.updateSettings({ reducedMotion: e.target.value as 'system' | 'on' | 'off' })}
+            >
               <option value="system">System</option>
               <option value="on">Reduced</option>
               <option value="off">Full</option>
@@ -91,7 +106,13 @@ export default function App() {
         ) : view === 'packs' ? (
           <PackScreen ctl={ctl} reducedMotion={reducedMotion} onViewCollection={() => go('collection')} />
         ) : (
-          <CollectionLog collection={ctl.collection} stats={ctl.stats} reducedMotion={reducedMotion} canReset={phase === 'sealed'} onReset={ctl.resetCollection} />
+          <CollectionLog
+            collection={ctl.collection}
+            stats={ctl.stats}
+            reducedMotion={reducedMotion}
+            canReset={phase === 'sealed'}
+            onReset={ctl.resetCollection}
+          />
         )}
         {ctl.progressError && (
           <p className="toast" role="status">

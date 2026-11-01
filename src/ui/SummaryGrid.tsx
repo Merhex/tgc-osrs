@@ -23,7 +23,15 @@ function SummaryCard({ opening, index }: { opening: OpeningRecord; index: number
   );
 }
 
-export function SummaryGrid({ opening, onOpenAnother, onViewCollection }: { opening: OpeningRecord; onOpenAnother: () => void; onViewCollection: () => void }) {
+export function SummaryGrid({
+  opening,
+  onOpenAnother,
+  onViewCollection,
+}: {
+  opening: OpeningRecord;
+  onOpenAnother: () => void;
+  onViewCollection: () => void;
+}) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => heading.current?.focus(), []);
   const newCount = opening.newFlags.filter(Boolean).length;
