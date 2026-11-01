@@ -69,6 +69,15 @@ install button, or DevTools → Application → Service Workers → *Offline*, a
 Development aids: `?debug&freeze=2.2` pauses the opening animation at 2.2 s (for visual review);
 `?nowebgl` forces the 2D fallback.
 
+## Deployment (GitHub Pages)
+
+`.github/workflows/deploy.yml` runs the tests, type check and production build, then publishes `dist/`
+to GitHub Pages on every push to `main` (or the current development branch) and on manual dispatch.
+
+One-time setup: in the repository go to **Settings → Pages → Build and deployment → Source** and
+choose **GitHub Actions**. The site is served from `https://<owner>.github.io/<repo>/`; asset paths
+are relative (`base: './'`), so no extra configuration is needed for the sub-path.
+
 ## Architecture
 
 | Concern | Location |
