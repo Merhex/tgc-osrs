@@ -1,0 +1,24 @@
+{
+  "project": "Gielinor: Legends & Loot (unofficial OSRS fan project; not affiliated with Jagex)",
+  "policy": "All visual assets are original works created for this project as procedural low-poly vector illustrations and canvas compositions. No images were copied, traced or hotlinked from the OSRS Wiki or Jagex. Wiki pages listed under 'reference' were used only as visual references for silhouettes and colour schemes. Nothing is fetched at runtime.",
+  "assets": [
+    { "id": "art/great-olm", "source": "src/art/scenes.ts#greatOlm", "type": "procedural SVG illustration", "origin": "original", "reference": ["https://oldschool.runescape.wiki/w/Great_Olm"] },
+    { "id": "art/verzik-vitur", "source": "src/art/scenes.ts#verzikVitur", "type": "procedural SVG illustration", "origin": "original", "reference": ["https://oldschool.runescape.wiki/w/Verzik_Vitur"] },
+    { "id": "art/the-wardens", "source": "src/art/scenes.ts#theWardens", "type": "procedural SVG illustration", "origin": "original", "reference": ["https://oldschool.runescape.wiki/w/Tumeken%27s_Warden", "https://oldschool.runescape.wiki/w/Elidinis%27_Warden"] },
+    { "id": "art/tzkal-zuk", "source": "src/art/scenes.ts#tzkalZuk", "type": "procedural SVG illustration", "origin": "original", "reference": ["https://oldschool.runescape.wiki/w/TzKal-Zuk"] },
+    { "id": "art/infernal-cape", "source": "src/art/scenes.ts#infernalCape", "type": "procedural SVG illustration", "origin": "original", "reference": ["https://oldschool.runescape.wiki/w/Infernal_cape"] },
+    { "id": "art/elysian-spirit-shield", "source": "src/art/scenes.ts#elysianSpiritShield", "type": "procedural SVG illustration", "origin": "original", "reference": ["https://oldschool.runescape.wiki/w/Elysian_spirit_shield", "https://oldschool.runescape.wiki/w/Elysian_sigil"] },
+    { "id": "art/twisted-bow", "source": "src/art/items.ts#twistedBow + src/art/scenes.ts#twistedBowArt", "type": "procedural SVG illustration", "origin": "original", "reference": ["https://oldschool.runescape.wiki/w/Twisted_bow"] },
+    { "id": "art/scythe-of-vitur", "source": "src/art/items.ts#scytheOfVitur + src/art/scenes.ts#scytheArt", "type": "procedural SVG illustration", "origin": "original", "reference": ["https://oldschool.runescape.wiki/w/Scythe_of_vitur"] },
+    { "id": "art/tumekens-shadow", "source": "src/art/items.ts#tumekensShadow + src/art/scenes.ts#shadowArt", "type": "procedural SVG illustration", "origin": "original", "reference": ["https://oldschool.runescape.wiki/w/Tumeken%27s_shadow"] },
+    { "id": "art/third-age-pickaxe", "source": "src/art/items.ts#thirdAgePickaxe + src/art/scenes.ts#pickaxeArt", "type": "procedural SVG illustration", "origin": "original", "reference": ["https://oldschool.runescape.wiki/w/3rd_age_pickaxe", "https://oldschool.runescape.wiki/w/Reward_casket"] },
+    { "id": "card-frames", "source": "src/render/cardFace.ts", "type": "canvas composition (frames, text, gems, rune glyphs)", "origin": "original" },
+    { "id": "card-back", "source": "src/render/cardFace.ts#renderCardBack", "type": "canvas composition", "origin": "original" },
+    { "id": "pack-wrapper", "source": "src/render/packArt.ts", "type": "canvas composition reusing the weapon illustrations", "origin": "original" },
+    { "id": "app-icons", "source": "public/icons/favicon.svg (PNG renders via scripts/generate-icons.mjs)", "type": "SVG/PNG icon", "origin": "original" },
+    { "id": "sound-effects", "source": "src/audio/sound.ts", "type": "Web Audio synthesis at runtime", "origin": "original; no audio files" },
+    { "id": "font-cinzel", "source": "@fontsource/cinzel", "type": "web font (bundled locally)", "origin": "Cinzel by Natanael Gama", "license": "SIL Open Font License 1.1" },
+    { "id": "font-alegreya-sans", "source": "@fontsource/alegreya-sans", "type": "web font (bundled locally)", "origin": "Alegreya Sans by Huerta Tipográfica", "license": "SIL Open Font License 1.1" }
+  ],
+  "trademarks": "Old School RuneScape, item, boss and location names are trademarks and/or copyright of Jagex Ltd. Used here descriptively in a non-commercial fan prototype."
+}

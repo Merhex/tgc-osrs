@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="0.5" cy="0.45" r="0.6"><stop offset="0" stop-color="#5a3a1c"/><stop offset="1" stop-color="#1e130a"/></radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2b8"/><stop offset="0.5" stop-color="#f0c050"/><stop offset="1" stop-color="#a06a1a"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <rect x="22" y="22" width="468" height="468" rx="80" fill="none" stroke="#c48c3a" stroke-width="12"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#d9a64a" stroke-width="10"/>
+  <polygon points="256,70 290,222 442,256 290,290 256,442 222,290 70,256 222,222" fill="url(#gold)"/>
+  <polygon points="256,70 290,222 256,256" fill="#b07a22"/>
+  <polygon points="442,256 290,290 256,256" fill="#b07a22"/>
+  <polygon points="256,442 222,290 256,256" fill="#b07a22"/>
+  <polygon points="70,256 222,222 256,256" fill="#b07a22"/>
+  <circle cx="256" cy="256" r="34" fill="#2a1a0c"/>
+  <circle cx="256" cy="256" r="14" fill="#6a2fb0"/>
+</svg>
